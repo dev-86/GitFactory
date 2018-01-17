@@ -1,0 +1,15 @@
+Git Tutorial – Operations & Commands
+
+Some of the basic operations in Git are:
+
+1. Initialize
+2. Add
+3. Commit
+4. Pull
+5. Push
+
+Some advanced Git operations are:
+
+1. Branching
+2. Merging
+3. Rebasing
