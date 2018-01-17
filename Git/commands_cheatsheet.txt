@@ -13,3 +13,5 @@ Some advanced Git operations are:
 1. Branching
 2. Merging
 3. Rebasing
+
+http://www.1strategy.com/blog/2017/05/30/using-the-cli-with-cross-account-roles-mfa/
