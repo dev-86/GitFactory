@@ -1,0 +1,4 @@
+Create a user group
+Add user to it
+Attach a policy so that we can begin working with ECS cluster
+
