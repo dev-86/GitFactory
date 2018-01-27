@@ -1,0 +1,164 @@
+sudo apt-get remove docker docker-engine docker.io
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo apt-get-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install -y docker.io
+
+____________________________
+!!! DOCKER Lifecycle !!!
+SEARCH ==> PULL ==> RUN
+____________________________
+
+docker search <image>
+docker pull <image>
+docker images
+docker run <image>
+____________________________
+
+============================
+USEFUL DOCKER COMMANDS    ||
+============================
+
+To verify docker setup:
+docker info
+docker version
+
+# Search for images
+docker search hello-world
+
+# Pull hello-world image
+docker pull hello-world
+
+# Check list of images available locally
+docker images 
+
+# Run 
+docker run hello-world
+
+# Run apache webserver container
+docker run httpd
+docker ps
+docker ps -a
+docker rm
+docker images
+
+# Run apache webserver container the right way 
+docker run -p 80:80 --name web -d httpd
+
+* -p : port mapping host m/c port:container port
+* --name: assigning name to the container so that the dockcer docker daemon doesn't picks a random.
+* d : detached mode
+
+docker ps
+docker stop web
+docker start web
+docker rm web
+
+_____________________________
+ADDING STORAGE TO CONTAINERS:
+_____________________________
+
+# METHOD 1:
+docker volume create data 
+docker run -v data:/data <image>
+
+# METHOD 2:
+docker run -d -v /opt/data:/data <image>
+docker volume ls
+
+
+# Add storage
+docker volume ls
+docker volume create data
+docker volume ls
+docker run -p 80:80 --name web -d -v data:/data httpd
+docker inspect web
+docker exec -it web /bin/bash
+
+* -it: interactive terminal
+
+# Run these commands within the containers
+cd /data
+echo "created from the web container" > data.txt
+exit
+
+# Kill the container and launch a new container
+docker rm -f web
+docker run -it --rm -v data:/data busybox /bin/sh
+
+# Add volumes from an existing directory
+mkdir htdocs
+dicker run -p 80:80 --name web -d -v $PWD/htdocs:/usr/local/apache2/htdocs httpd
+docker exec -it web /bin/bash
+
+# Run these commands within the containers
+echo '<h1>Hello world from Container</h1>' > index.html
+exit 
+
+echo '<h1>Hello world from Host</h1>' > index.html
+
+docker rm -f web 
+
+_______________________
+CREATING CUSTOM IMAGES
+_______________________
+
+# Launch apache webserver
+docker run -p 80:80 --name web -d httpd
+
+# Modify the container 
+docker exec -it web /bin/bash
+cd htdocs
+echo "<h1>Welcome to my Web Application</h1>" > index.html
+exit
+
+# Stop the container
+docker stop web
+
+# Commit the container to a new image
+docker images
+docker commit web doweb
+docker commit <container name> <new docker image name>
+docker tag web devakureel/doweb
+docker images
+
+# Push the new image to docker hub
+docker login
+docker push devakureel/doweb
+
+# Clean up
+docker rmi -f httpd
+
+# Bonus - Import/Export images
+docker pull busybox
+
+# Export busybox image
+docker save busybox > busybox.tar
+
+# Import busybox image
+docker load < busybox.tar
+
+
+_____________________________
+LAUNCHING A PRIVATE REGISTRY
+_____________________________
+
+# Run registry
+docker run -d -p 5000:5000 --restart=always --name=registry -v $PWD/registry:/var/lib/registry registry
+docker ps
+
+# Pull Busybox from dockerhub and push it to local registry
+docker pull busybox
+docker tag busybox localhost:5000/busybox
+docker push localhost:5000/busybox
+
+# Pull busybox from local registry
+docker rmi -f $(docker images -a -q)
+docker images
+docker pull localhost:5000/busybox
+docker images
+
+
+ 
+
