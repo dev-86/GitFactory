@@ -1,0 +1,80 @@
+# Set the docker hub user name
+export HUB_USER=devashish
+
+# Check the images
+docker images
+
+# Change to the directory
+cd HelloWhale
+
+# Build the docker image
+docker build . -t $HUB_USER/hellowhale
+
+# Check the new images
+docker images
+
+# Launch the container from the new image
+docker run -d -p 8080:80 --name hello-whale $HUB_USER/hellowhale
+
+# Check the webpage
+curl $HOST_IP:8080
+
+# Access the shell
+docker exec -it hello-whale /bin/bash
+
+# Check the files and the folder
+ls
+
+______________________________________________________________________________________________
+
+# Launch a web container
+docker run -d --name web --hostname web -p 80:80 httpd
+
+# Launch a client container
+docker run -it --rm --name client --hostname client yauritux/busybox-curl /bin/sh
+
+* --rm: remove the conatiner as soon as we are done.
+
+# Cleanup 
+docker rm -f web
+
+______________________________________________________________________________________________
+
+# List of available networks
+docker network ls
+
+# Create a custom network
+docker network create --driver bridge my_web_app
+
+# Launch a web container on the custom network 
+docker run -d --network=my_web_app --name web --hostname web -p 80:80 httpd
+
+# Launch another container on the same custom network
+docker run -it --rm --network=my_web_app --name client --hostname client yauritux/busybox-curl /bin/sh
+
+# Run the command within the client container
+ping web
+curl web
+
+# Cleanup
+docker rm -f web
+docker network remove my_web_app
+docker rmi -f yauritux/busybox-curl
+docker rmi -f httpd
+________________________________________________________________________________________________
+
+# DOCKER-COMPOSE
+apt-get install -y docker-compose
+docker-compose.yml
+
+docker-compose up -d 
+* -d: detached mode as a background process
+ 
+docker logs <container name>
+docker-compose logs (show logs of all the containers)
+
+docker-compose scale <service name>=No. of containers to be launched
+docker-compose scale web=20
+
+# To bring down the container counts to 2:
+docker-compose scale web=2
